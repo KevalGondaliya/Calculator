@@ -6,7 +6,7 @@ function App() {
     if (values === "") {
       return 0;
     }
-    const sumArray = values?.split(/,|\n/);
+    const sumArray = values ? values.split(/,|\n/) : [];
 
     let sum = 0;
 
