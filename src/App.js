@@ -2,73 +2,62 @@ import React, { useState } from "react";
 import "./App.css";
 
 function App() {
-  const [input, setInput] = useState("");
+  const [inputVal, setInputVal] = useState("");
   const [result, setResult] = useState(0);
+  const defaultDelimiter = /,|\n/;
 
-  // Added function for the sum of values
-  const add = (values) => {
+  // Function to calculate the sum of numbers in the input string
+  const add = (values, delimiter = defaultDelimiter) => {
     if (values === "") {
       return 0;
     }
 
-    let delimiter = /,|\n/;
-    const negativeNumbers = [];
-
     if (values.startsWith("//")) {
-      const deliCompare = values.match(/\/\/(.)\n/);
-      if (deliCompare) {
-        delimiter = new RegExp(deliCompare[1]);
+      const match = values.match(/\/\/(.)\n/);
+      if (match) {
+        delimiter = new RegExp(match[1]);
         values = values.substring(4);
       }
     }
 
-    const sumArray = values.split(delimiter);
+    // Split the input string based on the delimiter
+    const numbers = values.split(delimiter);
+
+    // Calculate the sum, handling invalid numbers and negative numbers
     let sum = 0;
-
-    for (const number of sumArray) {
-      const parsedNumber = parseInt(number);
-      if (isNaN(parsedNumber)) {
-        console.log(isNaN(parsedNumber));
-        throw new Error("Invalid number");
+    for (const numberStr of numbers) {
+      const number = parseInt(numberStr);
+      if (isNaN(number)) {
+        return "Invalid number";
       }
-
-      if (parsedNumber < 0) {
-        negativeNumbers.push(parsedNumber);
-      } else {
-        sum += parsedNumber;
+      if (number < 0) {
+        return "Negative numbers not allowed";
       }
-    }
-
-    if (negativeNumbers.length > 0) {
-      throw new Error(
-        `Negative numbers not allowed: ${negativeNumbers.join(", ")}`
-      );
+      sum += number;
     }
 
     return sum;
   };
 
-  // handle input change
+  // Handle Input change
   const handleChangeInput = (event) => {
-    setInput(event.target.value);
+    setInputVal(event.target.value);
   };
 
+  // Calculate the sum of value entered in the input
   const handleCalculate = () => {
-    try {
-      const sum = add(input);
-      setResult(sum);
-    } catch (error) {
-      setResult(error.message);
-    }
+    const sum = add(inputVal);
+    setResult(sum);
   };
 
   return (
     <div className="App">
       <header className="App-header">
+        <h1>calculator</h1>
         <textarea
           className="digitInput"
           type="text"
-          value={input}
+          value={inputVal}
           onChange={handleChangeInput}
         />
 
@@ -76,17 +65,15 @@ function App() {
           Sum
         </button>
 
-        {result > 0 ? (
-          <div className="sumView">Result: {result}</div>
-        ) : (
-          <div>
-            {result.startsWith("Negative numbers") && (
-              <div className="error-message">
-                Negative numbers are not allowed.
-              </div>
-            )}
-          </div>
-        )}
+        <div className="sumView">
+          {result !== 0 && result === "Invalid number" ? (
+            <div className="error-message">Invalid number entered!</div>
+          ) : result === "Negative numbers not allowed" ? (
+            <div className="error-message">Negative numbers not allowed.</div>
+          ) : (
+            <div className="total">{result >= 0 && `Result: ${result}`}</div>
+          )}
+        </div>
       </header>
     </div>
   );

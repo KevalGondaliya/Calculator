@@ -23,10 +23,13 @@
   width: 160px;
   padding: 5px;
 }
-
+.total {
+  color: green;
+  line-height: 0px;
+  margin-top: 30px;
+}
 .sumView {
   color: green;
-  margin-top: 20px;
 }
 
 .error-message {
